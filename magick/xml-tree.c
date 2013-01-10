@@ -1307,7 +1307,7 @@ static char *ParseEntities(char *xml,char **entities,int state)
               */
               length=strlen(entities[i]);
               entity=strchr(xml,';');
-              if ((length-1L) > (size_t) (entity-xml))
+              if ((length-1L) >= (size_t) (entity-xml))
                 {
                   offset=(ssize_t) (xml-p);
                   extent=(size_t) (offset+length+strlen(entity));
@@ -1611,7 +1611,8 @@ static MagickBooleanType ParseInternalDoctype(XMLTreeRoot *root,char *xml,
             while ((root->attributes[i] != (char **) NULL) &&
                     (strcmp(n,root->attributes[i][0]) != 0))
               i++;
-            while (*(n=(++xml)+strspn(xml,XMLWhitespace)) && (*n != '>'))
+            while ((*(n=xml+strspn(xml+1,XMLWhitespace)+1) != '\0') &&
+                   (*n != '>'))
             {
               xml=n+strcspn(n,XMLWhitespace);
               if (*xml != '\0')
