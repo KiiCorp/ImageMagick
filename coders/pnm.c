@@ -143,7 +143,7 @@ static inline long ConstrainPixel(Image *image,const long offset,
   return(offset);
 }
 
-static unsigned long PNMInteger(Image *image,const unsigned int base)
+static unsigned long PNMInteger2(Image *image,const unsigned int base,unsigned long errval)
 {
   char
     *comment;
@@ -198,6 +198,10 @@ static unsigned long PNMInteger(Image *image,const unsigned int base)
           return(0);
         continue;
       }
+    if (isspace(c) == MagickFalse)
+      {
+        return(errval);
+      }
   } while (isdigit(c) == MagickFalse);
   if (comment != (char *) NULL)
     {
@@ -219,6 +223,11 @@ static unsigned long PNMInteger(Image *image,const unsigned int base)
       return(value);
   } while (isdigit(c) != MagickFalse);
   return(value);
+}
+
+static unsigned long PNMInteger(Image *image,const unsigned int base)
+{
+  return PNMInteger2(image, base, 0);
 }
 
 static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
@@ -314,6 +323,11 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         */
         image->columns=PNMInteger(image,10);
         image->rows=PNMInteger(image,10);
+        if (image->columns == 0 || image->rows == 0)
+          {
+            ThrowReaderException(CorruptImageError, "InvalidFormat");
+            return DestroyImageList(image);
+          }
         if ((format == 'f') || (format == 'F'))
           {
             char
