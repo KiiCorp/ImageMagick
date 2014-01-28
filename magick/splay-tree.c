@@ -906,6 +906,8 @@ MagickExport void *GetValueFromSplayTree(SplayTreeInfo *splay_tree,
   void
     *value;
 
+  if (splay_tree == (SplayTreeInfo*) NULL)
+    return((void *) NULL);
   assert(splay_tree != (SplayTreeInfo *) NULL);
   assert(splay_tree->signature == MagickSignature);
   if (splay_tree->debug != MagickFalse)
